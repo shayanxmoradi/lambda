@@ -1,7 +1,10 @@
 package cws;
 
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class lambda {
     public static void main(String[] args) {
@@ -12,25 +15,39 @@ public class lambda {
 //https://github.com/shayanxmoradi/lambda.git
         // List<Integer> list = new ArrayList<>();
         // Integer[] values= new Integer[4];
-        IntStream stream = IntStream.range(0, 100);
+        List<Integer> numerList = new ArrayList<>();
+        IntStream stream = numerList.stream().mapToInt(x -> x);
 
-        MyNumber integers = stream.boxed()
-                .parallel()
-                .collect(() -> {
+
+        System.out.println(" Enter your number");
+        Scanner scanner = new Scanner(System.in);
+
+
+
+        Summary integers = Stream.generate(()->{
+                    System.out.println("Enter an integer");
+                    return scanner.nextInt();
+                }).limit(10)
+                //.parallel()
+                .collect(() -> {// this is terminal operator and will start the stream
                             System.out.println("new");
-                    return new MyNumber();},
-                        (x, y) -> {
+                            return new Summary(); //put stream values in this Summary
+                        },
+                        (summary, number) -> {
 
-                            x.setMax(Integer.max(x.getMax(), y));
-                            x.setMin(Integer.min(x.getMin(), y));
-                            x.setSum(Integer.sum(x.getSum(), y));
-                            x.setCount(x.getCount() + 1);
-                            x.setAverage(x.getSum() / (double) x.getCount());
+                            summary.setMax(summary.getMax() == null ? number : Integer.max(summary.getMax(), number));//is greater than max
+                            summary.setMin(summary.getMin() == null ? number :
+                                    Integer.min(summary.getMin(), number));
 
+                            summary.setSum(Integer.sum(summary.getSum(), number));
+                            summary.setCount(summary.getCount() + 1);
+                            summary.setAverage(summary.getSum() / (double) summary.getCount());
+                            System.out.println(summary);
 
 
                         },
                         (x, y) -> {
+                    // this will  be only used , when we're using .parallel
                             x.setMax(Integer.max(x.getMax(), y.getMax()));
                             x.setMin(Integer.min(x.getMin(), y.getMin()));
                             x.setSum(Integer.sum(x.getSum(), y.getSum()));
@@ -38,24 +55,26 @@ public class lambda {
                             x.setAverage(x.getSum() / (double) x.getCount());
 
                             System.out.println(" combine");
+
                         });
 
         System.out.println(integers);
 
     }
 
-    static class MyNumber {
-        int max;
-        int min;
+
+    static class Summary {
+        Integer max;
+        Integer min;
 
         int sum;
         int count;
         double average;
 
-        public MyNumber() {
+        public Summary() {
         }
 
-        public MyNumber(int number) {
+        public Summary(int number) {
             this.max = number;
             this.min = number;
             this.sum = number;
@@ -63,7 +82,7 @@ public class lambda {
             this.average = number;
         }
 
-        public MyNumber(int max, int min, int sum, int count, double average) {
+        public Summary(int max, int min, int sum, int count, double average) {
             this.max = max;
             this.min = min;
             this.sum = sum;
@@ -80,11 +99,12 @@ public class lambda {
             this.average = average;
         }
 
-        public int getMin() {
+        public Integer getMin() {
             return min;
         }
 
-        public void setMin(int min) {
+        public void setMin(Integer min) {
+
             this.min = min;
         }
 
@@ -96,11 +116,11 @@ public class lambda {
             this.count = count;
         }
 
-        public int getMax() {
+        public Integer getMax() {
             return max;
         }
 
-        public void setMax(int max) {
+        public void setMax(Integer max) {
             this.max = max;
         }
 
@@ -122,7 +142,7 @@ public class lambda {
                    ", average=" + average +
                    '}';
         }
-    }
+    }}
 
 
-}
+
