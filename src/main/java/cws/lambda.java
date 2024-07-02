@@ -15,7 +15,10 @@ public class lambda {
         IntStream stream = IntStream.range(0, 100);
 
         MyNumber integers = stream.boxed()
-                .reduce(new MyNumber(),
+                .parallel()
+                .collect(() -> {
+                            System.out.println("new");
+                    return new MyNumber();},
                         (x, y) -> {
 
                             x.setMax(Integer.max(x.getMax(), y));
@@ -24,7 +27,7 @@ public class lambda {
                             x.setCount(x.getCount() + 1);
                             x.setAverage(x.getSum() / (double) x.getCount());
 
-                            return x;
+
 
                         },
                         (x, y) -> {
@@ -34,7 +37,7 @@ public class lambda {
                             x.setCount(y.getCount() + x.getCount());
                             x.setAverage(x.getSum() / (double) x.getCount());
 
-                            return x;
+                            System.out.println(" combine");
                         });
 
         System.out.println(integers);
