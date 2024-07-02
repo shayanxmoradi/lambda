@@ -28,7 +28,7 @@ public class lambda {
                     System.out.println("Enter an integer");
                     return scanner.nextInt();
                 }).limit(10)
-                //.parallel()
+               .parallel()
                 .collect(() -> {// this is terminal operator and will start the stream
                             System.out.println("new");
                             return new Summary(); //put stream values in this Summary
